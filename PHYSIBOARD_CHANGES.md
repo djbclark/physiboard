@@ -18,6 +18,12 @@ Long press can capitalise again, and you can pick what it does.
   from a BlackBerry 10 keyboard, where a held letter is a capital, had no way to get that
   back.
 
+- **Keyboard swipe: the right-hand third is reachable again.** The touch layer over the keys
+  reports its own coordinate range (0 to 1079 across on the Titan 2 Elite), but the swipe code
+  split the surface into thirds as if it were 1440 wide, so a flick had to start in the
+  rightmost tenth of the keys to pick the right-hand suggestion. The thirds now follow the
+  range the device declares, with the old 1440 kept only as a fallback.
+
 ## 2.0.7 (2026-09-19)
 
 Dictation waits for you to start speaking, Teams keeps its message box above the bar, and a
