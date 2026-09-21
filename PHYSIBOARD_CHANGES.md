@@ -31,6 +31,11 @@ Long press can capitalise again, and you can pick what it does.
   rightmost tenth of the keys to pick the right-hand suggestion. The thirds now follow the
   range the device declares, with the old 1440 kept only as a fallback.
 
+- **Keyboard swipe needs Scroll assistant on the Titan 2 Elite.** The phone only passes swipes
+  on the keys to apps while its own Scroll assistant is on (Settings → Gestures → Keyboard
+  gestures); with it off the keyboard never sees them. The Keyboard swipe screen now says so, and
+  notes that a flick there travels about 300 px, so the 500 px default is worth lowering.
+
 ## 2.0.7 (2026-09-19)
 
 Dictation waits for you to start speaking, Teams keeps its message box above the bar, and a

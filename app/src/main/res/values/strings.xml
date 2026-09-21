@@ -1663,7 +1663,7 @@ Each key can be configured as Keycode, Action, Native Ctrl, or None. Use overrid
     <string name="trackpad_delete_swipe_threshold_title">Delete Swipe</string>
     <string name="trackpad_delete_swipe_threshold_description">Distance required to swipe left and delete the previous word.</string>
     <string name="trackpad_swipe_threshold_value">%1$d px</string>
-    <string name="trackpad_gestures_note">Swipes are seen only while the suggestion bar is on screen, and only in a text field.</string>
+    <string name="trackpad_gestures_note">Swipes are seen only while the suggestion bar is on screen in a text field. On the Titan 2 Elite the phone passes keyboard swipes to apps only while Scroll assistant is on (Settings → Gestures → Keyboard gestures). A flick there travels about 300 px, so lower Suggestion Swipe from 500 if flicks are ignored.</string>
     <string name="trackpad_gestures_diagnostics_title">Trackpad diagnostics</string>
     <string name="trackpad_gestures_diagnostics_description">See the raw swipes the keyboard receives</string>
 
