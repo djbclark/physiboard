@@ -33,8 +33,10 @@ Long press can capitalise again, and you can pick what it does.
 
 - **Keyboard swipe needs Scroll assistant on the Titan 2 Elite.** The phone only passes swipes
   on the keys to apps while its own Scroll assistant is on (Settings → Gestures → Keyboard
-  gestures); with it off the keyboard never sees them. The Keyboard swipe screen now says so, and
-  notes that a flick there travels about 300 px, so the 500 px default is worth lowering.
+  gestures); with it off the keyboard never sees them. The Keyboard swipe screen now says so. The
+  default swipe distance drops from 500 px to 200 px: a natural flick on the Elite covers
+  280 to 470 px, so 500 rejected most of them, while incidental touches while typing stay
+  under 100 px.
 
 ## 2.0.7 (2026-09-19)
 
