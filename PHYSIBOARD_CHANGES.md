@@ -17,6 +17,13 @@ Long press can capitalise again, and you can pick what it does.
   existed; the screen that set it went away with the old Modifiers page, so anyone coming
   from a BlackBerry 10 keyboard, where a held letter is a capital, had no way to get that
   back.
+- **Keyboard swipe is back as a setting.** Under *Keyboard → Keyboard swipe* you can turn on
+  the swipe-up-on-the-keys gesture that accepts a word suggestion, choose whether that same
+  swipe may press the add-to-dictionary button, and set how far a swipe has to travel before
+  it counts (120–750 px, 500 px to begin with). A note on the screen says when swipes are
+  seen, and a diagnostics row shows the raw swipes the keyboard receives. The gesture and
+  its preferences had been in the app all along, but the screen that set them went away in
+  1.0.2, so on a fresh install the gesture was off with no way to turn it on.
 
 ## 2.0.7 (2026-09-19)
 

@@ -50,6 +50,7 @@ import androidx.compose.material.icons.filled.TouchApp
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Spellcheck
+import androidx.compose.material.icons.filled.SwipeUp
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.filled.Engineering
 import androidx.activity.compose.BackHandler
@@ -98,7 +99,8 @@ enum class SettingsDestination {
     NotificationRing,
     KeyboardHub,
     KeyMapping,
-    LongPressBehavior
+    LongPressBehavior,
+    KeyboardSwipe
 }
 
 private val settingsNavigationStackSaver =
@@ -292,6 +294,7 @@ fun SettingsScreen(
             SettingsSearchTarget.APP_LANGUAGE -> navigateTo(SettingsDestination.AppLanguage)
             SettingsSearchTarget.VOICE -> navigateTo(SettingsDestination.Voice)
             SettingsSearchTarget.LONG_PRESS_BEHAVIOR -> navigateTo(SettingsDestination.LongPressBehavior)
+            SettingsSearchTarget.KEYBOARD_SWIPE -> navigateTo(SettingsDestination.KeyboardSwipe)
         }
     }
         when (destination) {
@@ -333,6 +336,7 @@ fun SettingsScreen(
                         openCustomization(SettingsActivity.CUSTOMIZATION_DESTINATION_APP_ENTER_BEHAVIOR)
                     },
                     onLongPressBehaviorClick = { navigateTo(SettingsDestination.LongPressBehavior) },
+                    onKeyboardSwipeClick = { navigateTo(SettingsDestination.KeyboardSwipe) },
                     onExtrasClick = { navigateTo(SettingsDestination.Extras) },
                     onDiagnosticsClick = { navigateTo(SettingsDestination.Diagnostics) },
                     onAboutClick = { navigateTo(SettingsDestination.About) },
@@ -523,12 +527,24 @@ fun SettingsScreen(
                             title = stringResource(R.string.long_press_behavior_title),
                             description = stringResource(R.string.long_press_behavior_description),
                             onClick = { navigateTo(SettingsDestination.LongPressBehavior) }
+                        ),
+                        HubRow(
+                            icon = Icons.Filled.SwipeUp,
+                            title = stringResource(R.string.trackpad_gestures_title),
+                            description = stringResource(R.string.trackpad_gestures_description),
+                            onClick = { navigateTo(SettingsDestination.KeyboardSwipe) }
                         )
                     )
                 )
             }
             SettingsDestination.LongPressBehavior -> {
                 LongPressBehaviorScreen(
+                    modifier = modifier,
+                    onBack = { navigateBack() }
+                )
+            }
+            SettingsDestination.KeyboardSwipe -> {
+                KeyboardSwipeSettingsScreen(
                     modifier = modifier,
                     onBack = { navigateBack() }
                 )
@@ -653,6 +669,7 @@ private fun SettingsMainScreen(
     onNavModeClick: () -> Unit,
     onEnterBehaviorClick: () -> Unit,
     onLongPressBehaviorClick: () -> Unit,
+    onKeyboardSwipeClick: () -> Unit,
     onExtrasClick: () -> Unit,
     onDiagnosticsClick: () -> Unit,
     onAboutClick: () -> Unit,
@@ -683,6 +700,7 @@ private fun SettingsMainScreen(
             SettingsSearchTarget.CUSTOM_INPUT_STYLES -> onCustomInputStylesClick()
             SettingsSearchTarget.APP_LANGUAGE -> onAppLanguageClick()
             SettingsSearchTarget.LONG_PRESS_BEHAVIOR -> onLongPressBehaviorClick()
+            SettingsSearchTarget.KEYBOARD_SWIPE -> onKeyboardSwipeClick()
         }
     }
     val snackbarHostState = remember { SnackbarHostState() }

@@ -25,7 +25,8 @@ enum class SettingsSearchTarget {
     CUSTOM_INPUT_STYLES,
     APP_LANGUAGE,
     VOICE,
-    LONG_PRESS_BEHAVIOR
+    LONG_PRESS_BEHAVIOR,
+    KEYBOARD_SWIPE
 }
 
 /**
@@ -63,6 +64,8 @@ object SettingsCatalog {
         SettingsSearchEntry(R.string.app_enter_behaviour_title, R.string.app_enter_behaviour_title, SettingsSearchTarget.ENTER_BEHAVIOR, "enter send newline whatsapp per app"),
         SettingsSearchEntry(R.string.long_press_title, R.string.long_press_behavior_title, SettingsSearchTarget.LONG_PRESS_BEHAVIOR, "long press hold delay duration timing ms"),
         SettingsSearchEntry(R.string.long_press_modifier_title, R.string.long_press_behavior_title, SettingsSearchTarget.LONG_PRESS_BEHAVIOR, "long press modifier hold alt shift sym variations diacritics accents punctuation capitalization symbols"),
+        SettingsSearchEntry(R.string.trackpad_gestures_title, R.string.trackpad_gestures_title, SettingsSearchTarget.KEYBOARD_SWIPE, "swipe up flick suggestion trackpad gesture keyboard keys accept word"),
+        SettingsSearchEntry(R.string.trackpad_gestures_enabled_title, R.string.trackpad_gestures_title, SettingsSearchTarget.KEYBOARD_SWIPE, "swipe up flick suggestion trackpad gesture keyboard keys accept word enable"),
 
         // Device toolbox
         SettingsSearchEntry(R.string.toolbox_title, R.string.toolbox_title, SettingsSearchTarget.TOOLBOX, "device toolbox titan unihertz system tools"),
