@@ -38,6 +38,13 @@ Long press can capitalise again, and you can pick what it does.
   280 to 470 px, so 500 rejected most of them, while incidental touches while typing stay
   under 100 px.
 
+- **Swipe to delete is back on the Keyboard swipe screen.** A left swipe on the keys deletes
+  the previous word. The gesture and its preference had been in the app all along, but it
+  has been off with no switch since 1.0.2. The Keyboard swipe screen now has the switch and
+  a distance slider for it, and settings search finds the switch. Its default distance drops
+  from 500 px to 200 px: measured left flicks on the Titan 2 Elite cover about 170 to 680 px,
+  so 500 rejected most of them.
+
 ## 2.0.7 (2026-09-19)
 
 Dictation waits for you to start speaking, Teams keeps its message box above the bar, and a

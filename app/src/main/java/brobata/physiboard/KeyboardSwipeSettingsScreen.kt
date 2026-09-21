@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Backspace
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Info
@@ -49,6 +50,8 @@ private const val KEY_TRACKPAD_GESTURES_ENABLED = "trackpad_gestures_enabled"
 private const val KEY_TRACKPAD_GESTURE_ADD_WORD_ENABLED = "trackpad_gesture_add_word_enabled"
 private const val KEY_TRACKPAD_SWIPE_THRESHOLD = "trackpad_swipe_threshold"
 private const val KEY_TRACKPAD_SUGGESTION_SWIPE_THRESHOLD = "trackpad_suggestion_swipe_threshold"
+private const val KEY_SWIPE_TO_DELETE = "swipe_to_delete"
+private const val KEY_TRACKPAD_DELETE_SWIPE_THRESHOLD = "trackpad_delete_swipe_threshold"
 
 /** Slider granularity for the swipe distance, in pixels. */
 private const val SWIPE_THRESHOLD_STEP_PX = 10
@@ -57,9 +60,10 @@ private const val SWIPE_THRESHOLD_STEP_PX = 10
 private const val DISABLED_ALPHA = 0.38f
 
 /**
- * Keyboard swipe screen: the swipe-up-to-accept-a-suggestion gesture on the physical
- * keys. State is hoisted here and re-read when a preference changes elsewhere. The
- * provider stays at its default (native IME events); there is no provider picker.
+ * Keyboard swipe screen: the swipe-up-to-accept-a-suggestion and swipe-left-to-delete
+ * gestures on the physical keys. State is hoisted here and re-read when a preference
+ * changes elsewhere. The providers stay at their defaults (native IME events); there is
+ * no provider picker.
  */
 @Composable
 fun KeyboardSwipeSettingsScreen(
@@ -78,6 +82,12 @@ fun KeyboardSwipeSettingsScreen(
     var swipeThreshold by remember {
         mutableFloatStateOf(SettingsManager.getTrackpadSuggestionSwipeThreshold(context))
     }
+    var swipeToDeleteEnabled by remember {
+        mutableStateOf(SettingsManager.getSwipeToDelete(context))
+    }
+    var deleteSwipeThreshold by remember {
+        mutableFloatStateOf(SettingsManager.getTrackpadDeleteSwipeThreshold(context))
+    }
     DisposableEffect(context) {
         val prefs = SettingsManager.getPreferences(context)
         val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
@@ -86,9 +96,17 @@ fun KeyboardSwipeSettingsScreen(
                     gesturesEnabled = SettingsManager.getTrackpadGesturesEnabled(context)
                 KEY_TRACKPAD_GESTURE_ADD_WORD_ENABLED ->
                     addWordEnabled = SettingsManager.getTrackpadGestureAddWordEnabled(context)
-                // The suggestion threshold falls back to the shared one when unset.
-                KEY_TRACKPAD_SWIPE_THRESHOLD, KEY_TRACKPAD_SUGGESTION_SWIPE_THRESHOLD ->
+                KEY_SWIPE_TO_DELETE ->
+                    swipeToDeleteEnabled = SettingsManager.getSwipeToDelete(context)
+                // Both per-gesture thresholds fall back to the shared one when unset.
+                KEY_TRACKPAD_SWIPE_THRESHOLD -> {
                     swipeThreshold = SettingsManager.getTrackpadSuggestionSwipeThreshold(context)
+                    deleteSwipeThreshold = SettingsManager.getTrackpadDeleteSwipeThreshold(context)
+                }
+                KEY_TRACKPAD_SUGGESTION_SWIPE_THRESHOLD ->
+                    swipeThreshold = SettingsManager.getTrackpadSuggestionSwipeThreshold(context)
+                KEY_TRACKPAD_DELETE_SWIPE_THRESHOLD ->
+                    deleteSwipeThreshold = SettingsManager.getTrackpadDeleteSwipeThreshold(context)
             }
         }
         prefs.registerOnSharedPreferenceChangeListener(listener)
@@ -131,11 +149,32 @@ fun KeyboardSwipeSettingsScreen(
                 }
             )
             KeyboardSwipeThresholdRow(
+                title = stringResource(R.string.trackpad_suggestion_swipe_threshold_title),
                 threshold = swipeThreshold,
                 enabled = gesturesEnabled,
                 onThresholdChange = { swipeThreshold = it },
                 onThresholdChangeFinished = {
                     SettingsManager.setTrackpadSuggestionSwipeThreshold(context, swipeThreshold)
+                }
+            )
+            KeyboardSwipeSwitchRow(
+                icon = Icons.AutoMirrored.Filled.Backspace,
+                title = stringResource(R.string.swipe_to_delete_title),
+                description = stringResource(R.string.swipe_to_delete_description),
+                checked = swipeToDeleteEnabled,
+                enabled = gesturesEnabled,
+                onCheckedChange = { value ->
+                    swipeToDeleteEnabled = value
+                    SettingsManager.setSwipeToDelete(context, value)
+                }
+            )
+            KeyboardSwipeThresholdRow(
+                title = stringResource(R.string.trackpad_delete_swipe_threshold_title),
+                threshold = deleteSwipeThreshold,
+                enabled = gesturesEnabled && swipeToDeleteEnabled,
+                onThresholdChange = { deleteSwipeThreshold = it },
+                onThresholdChangeFinished = {
+                    SettingsManager.setTrackpadDeleteSwipeThreshold(context, deleteSwipeThreshold)
                 }
             )
             KeyboardSwipeNoteRow(text = stringResource(R.string.trackpad_gestures_note))
@@ -201,11 +240,12 @@ private fun KeyboardSwipeSwitchRow(
 }
 
 /**
- * Slider row for the swipe distance that picks a suggestion. The value is committed
- * when the drag ends, because the IME rebuilds its gesture detector on every change.
+ * Slider row for a swipe distance (suggestion or delete). The value is committed when
+ * the drag ends, because the IME rebuilds its gesture detector on every change.
  */
 @Composable
 private fun KeyboardSwipeThresholdRow(
+    title: String,
     threshold: Float,
     enabled: Boolean,
     onThresholdChange: (Float) -> Unit,
@@ -234,7 +274,7 @@ private fun KeyboardSwipeThresholdRow(
             )
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = stringResource(R.string.trackpad_suggestion_swipe_threshold_title),
+                    text = title,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurface.disabledIf(!enabled),

@@ -458,7 +458,9 @@ object SettingsManager {
     // A natural flick on the Titan 2 Elite covers 280 to 470 px; incidental touches while
     // typing stay under 100 px. 500 rejected most real flicks.
     private const val DEFAULT_TRACKPAD_SUGGESTION_SWIPE_THRESHOLD = 200f
-    private const val DEFAULT_TRACKPAD_DELETE_SWIPE_THRESHOLD = DEFAULT_TRACKPAD_SWIPE_THRESHOLD
+    // Measured left flicks on the Titan 2 Elite cover 168 to 684 px (mostly 190 to 415);
+    // 500 rejected most of them.
+    private const val DEFAULT_TRACKPAD_DELETE_SWIPE_THRESHOLD = 200f
     private const val MIN_TRACKPAD_SWIPE_THRESHOLD = 120f
     private const val MAX_TRACKPAD_SWIPE_THRESHOLD = 750f
     const val TRACKPAD_PROVIDER_SHIZUKU = "shizuku"
