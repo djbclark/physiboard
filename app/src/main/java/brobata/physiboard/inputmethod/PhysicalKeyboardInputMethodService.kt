@@ -82,6 +82,7 @@ class PhysicalKeyboardInputMethodService : InputMethodService() {
         private const val TAG = "PhysiBoardInputMethod"
         private const val TRACKPAD_DEBUG_TAG = "TrackpadDebug"
         private const val NATIVE_TRACKPAD_MIN_SWIPE_VELOCITY_PX_PER_MS = 2f
+        private const val NATIVE_TRACKPAD_FALLBACK_WIDTH = 1440f
         private const val KEYBOARD_SURFACE_TRANSITION_DELAY_MS = 32L
         /** Enough to cover an editor that is slow to wire up, few enough to give up on one that never will. */
         private const val MAX_CURSOR_UPDATE_ATTEMPTS = 8
@@ -5293,6 +5294,7 @@ class PhysicalKeyboardInputMethodService : InputMethodService() {
                 nativeTrackpadGestureStart = NativeTrackpadGestureStart(
                     x = event.x,
                     y = event.y,
+                    xMax = nativeImeTrackpadAxisMax(event, MotionEvent.AXIS_X, NATIVE_TRACKPAD_FALLBACK_WIDTH),
                     origin = origin,
                     actionName = motionActionName(event.actionMasked),
                     deviceId = event.deviceId,
@@ -5326,6 +5328,7 @@ class PhysicalKeyboardInputMethodService : InputMethodService() {
                 nativeTrackpadGestureStart ?: NativeTrackpadGestureStart(
                     x = event.x,
                     y = event.y,
+                    xMax = nativeImeTrackpadAxisMax(event, MotionEvent.AXIS_X, NATIVE_TRACKPAD_FALLBACK_WIDTH),
                     origin = origin,
                     actionName = motionActionName(event.actionMasked),
                     deviceId = event.deviceId,
@@ -5456,10 +5459,10 @@ class PhysicalKeyboardInputMethodService : InputMethodService() {
 
         when (direction) {
             NativeTrackpadSwipeDirection.UP -> {
-                val third = nativeImeTrackpadThird(start.x)
+                val third = nativeImeTrackpadThird(start.x, start.xMax)
                 Log.d(
                     TRACKPAD_DEBUG_TAG,
-                    "Native swipe accepted[$phase]: direction=UP startX=${start.x}, startY=${start.y}, x=$x, y=$y, dx=$deltaX, dy=$deltaY, duration=${durationMs}ms, velocity=$upVelocity, third=$third"
+                    "Native swipe accepted[$phase]: direction=UP startX=${start.x}, startY=${start.y}, x=$x, y=$y, dx=$deltaX, dy=$deltaY, duration=${durationMs}ms, velocity=$upVelocity, xMax=${start.xMax}, third=$third"
                 )
                 KeyboardEventTracker.notifySyntheticGestureKeyEvent(
                     provider = SettingsManager.TRACKPAD_PROVIDER_NATIVE_IME,
@@ -5518,8 +5521,19 @@ class PhysicalKeyboardInputMethodService : InputMethodService() {
         return SettingsManager.getTrackpadDeleteSwipeThreshold(this)
     }
 
-    private fun nativeImeTrackpadThird(x: Float): Int {
-        val width = 1440f
+    /**
+     * The touch layer over the keys reports X in the device's own range (0 to 1079 on the
+     * Titan 2 Elite), not upstream's assumed 1440, so the third boundaries come from the
+     * range the event's device declares and fall back to 1440 only when it declares none.
+     */
+    private fun nativeImeTrackpadAxisMax(event: MotionEvent, axis: Int, fallback: Float): Float {
+        val device = InputDevice.getDevice(event.deviceId)
+        val range = device?.getMotionRange(axis, event.source) ?: device?.getMotionRange(axis)
+        val max = range?.max
+        return if (max != null && max.isFinite() && max > 0f) max else fallback
+    }
+
+    private fun nativeImeTrackpadThird(x: Float, width: Float = NATIVE_TRACKPAD_FALLBACK_WIDTH): Int {
         val clampedX = x.coerceIn(0f, width)
         return when {
             clampedX < width / 3f -> 0
@@ -5714,6 +5728,7 @@ class PhysicalKeyboardInputMethodService : InputMethodService() {
     private data class NativeTrackpadGestureStart(
         val x: Float,
         val y: Float,
+        val xMax: Float = NATIVE_TRACKPAD_FALLBACK_WIDTH,
         val origin: String,
         val actionName: String,
         val deviceId: Int,
